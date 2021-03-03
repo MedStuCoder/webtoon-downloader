@@ -6,6 +6,6 @@ C# version has a GUI (Windows only), which you can download in the releases tab 
 
 - [x] Get cartoons_name from URL
 
-- [x] Age verification bypass by adding specific cookies to requests.get
+- [x] (Not Working) Age verification bypass by adding specific cookies to requests.get 
 
 - [ ] Get episode name by parsing base page
