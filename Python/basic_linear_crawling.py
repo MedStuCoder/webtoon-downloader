@@ -19,6 +19,32 @@ import requests
 from bs4 import BeautifulSoup
 
 
+#Progress bar from https://stackoverflow.com/a/34325723
+# Print iterations progress
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
+clear = lambda: os.system('cls' if os.name == 'nt' else 'clear') # Clear screen (NT is Windows) 
+
+
 url = 'https://webtoons.com'
 
 cartoons = ['/en/fantasy/the-fever-king/list?title_no=1659'] # URLs to cartoon's homepage
@@ -31,6 +57,7 @@ for cartoon in cartoons:
 
 
 current_index = 0
+
 
 for cartoon in cartoons:
     if not os.path.isdir(f'E:/Webtoons/{cartoons_names[current_index]}'): # Create folder for the cartoon if it doesn't exist
@@ -47,27 +74,31 @@ for cartoon in cartoons:
     last_page = int(last_page.find('span').text) # Finds how many pages there are for the title
 
     episodes = []
+    clear()
     for page in range(1, last_page+1): # Goes through each page and finds the links to each of the episodes
+        printProgressBar(page, last_page+1, prefix = 'Loading Episodes')
+
         base_page = requests.get(url+cartoon+f'&page={page}', headers={'User-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3724.8 Safari/537.36'}).text
         base_page_source = BeautifulSoup(base_page, 'lxml')
         all_episodes = base_page_source.find('ul', id='_listUl')
         all_episodes = all_episodes.findAll('li')
         old_episodes = []
         for episode in all_episodes:
-            print(episode.find('a'))
-            print('DON')
+            #print(episode.find('a'))
+            #print('DON')
             old_episodes.append(episode.find('a'))
         for episode in old_episodes:
-            print(episode['href'])
-            print("ok")
+            #print(episode['href'])
+            #print("ok")
             episodes.append(episode['href'])
 
     episodes = episodes[::-1] # Stores all the links for the episodes in a list
 
     current_episode = 1
-
+    clear()
     for episode in episodes: # Goes through each of the episodes, create a folder for each of them (if it doesn't exist), finds the links to all the cartoon's images in the page
-        print(f'Current episode: {cartoons_names[current_index]} - {episode}')
+        #print(f'Current episode: {cartoons_names[current_index]} - {episode}')
+        printProgressBar(episodes.index(episode), len(episodes), prefix = 'Total Progress')
         if not os.path.isdir(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}'):
             os.mkdir(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}')
 
@@ -82,7 +113,10 @@ for cartoon in cartoons:
         image_count = 0
 
         for image in images: # For each image link found in the episode, store it inside the current episode's folder as .jpg (if it doesn't already exist)
-            print(image)
+            #print(image)
+            if images.index(image) == 0:
+                print()
+            printProgressBar(images.index(image), len(images), prefix = 'Current Episode')
             if not os.path.isfile(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/{image_count}.jpg'):
                 r = urllib.request.Request(image['data-url'], headers={'Referer': 'https://webtoons.com/'})
                 response = urllib.request.urlopen(r)
