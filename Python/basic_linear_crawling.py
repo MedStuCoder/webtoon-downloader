@@ -58,7 +58,7 @@ for cartoon in cartoons:
 
 current_index = 0
 
-
+os.mkdir('Webtoons')
 for cartoon in cartoons:
     if not os.path.isdir(f'Webtoons/{cartoons_names[current_index]}'): # Create folder for the cartoon if it doesn't exist
         os.mkdir(f'Webtoons/{cartoons_names[current_index]}')
