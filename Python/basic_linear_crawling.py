@@ -21,9 +21,13 @@ from bs4 import BeautifulSoup
 
 url = 'https://webtoons.com'
 
-cartoons = ['/en/fantasy/the-fever-king/list?title_no=1659'] # Urls to cartoon's homepage
+cartoons = ['/en/fantasy/the-fever-king/list?title_no=1659'] # URLs to cartoon's homepage
+cartoons_names = [] # List containing titles of cartoons acquired from requested URLs
 
-cartoons_names = ['The Fever King'] # Title of the folders in which the episodes are going to be stored, for each title (respectively)
+for cartoon in cartoons:
+    cartoon=cartoon.split("/")
+    cartoons_names.append(cartoon[3].replace("-", " ").title())
+
 
 
 current_index = 0
