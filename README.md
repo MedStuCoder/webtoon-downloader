@@ -4,7 +4,7 @@ C# version has a GUI (Windows only), which you can download in the releases tab 
 
 - [x] Progress bar
 
-- [x] Get cartoons_name
+- [x] Get cartoons_name from URL
 
 - [ ] Age verification bypass by adding specific cookies to requests.get
 
