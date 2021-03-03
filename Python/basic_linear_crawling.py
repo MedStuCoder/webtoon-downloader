@@ -60,11 +60,11 @@ current_index = 0
 
 
 for cartoon in cartoons:
-    if not os.path.isdir(f'E:/Webtoons/{cartoons_names[current_index]}'): # Create folder for the cartoon if it doesn't exist
-        os.mkdir(f'E:/Webtoons/{cartoons_names[current_index]}')
+    if not os.path.isdir(f'Webtoons/{cartoons_names[current_index]}'): # Create folder for the cartoon if it doesn't exist
+        os.mkdir(f'Webtoons/{cartoons_names[current_index]}')
 
     final_page = cartoon + '&page=999999'
-    base_page = requests.get(url+final_page, headers={'User-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3724.8 Safari/537.36'}).text
+    base_page = requests.get(url+final_page, headers={'User-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3724.8 Safari/537.36'}, cookies={'locale':'en', 'needGDPR':'false', 'needCCPA':'false', 'needCOPPA':'false'}).text
     base_page_source = BeautifulSoup(base_page, 'lxml')
 
     last_page = base_page_source.find('div', {'class': 'paginate'})
@@ -99,8 +99,8 @@ for cartoon in cartoons:
     for episode in episodes: # Goes through each of the episodes, create a folder for each of them (if it doesn't exist), finds the links to all the cartoon's images in the page
         #print(f'Current episode: {cartoons_names[current_index]} - {episode}')
         printProgressBar(episodes.index(episode), len(episodes), prefix = 'Total Progress')
-        if not os.path.isdir(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}'):
-            os.mkdir(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}')
+        if not os.path.isdir(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}'):
+            os.mkdir(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}')
 
         current_episode_page = requests.get(episode, headers={'User-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3724.8 Safari/537.36'}).text
 
@@ -117,18 +117,18 @@ for cartoon in cartoons:
             if images.index(image) == 0:
                 print()
             printProgressBar(images.index(image), len(images), prefix = 'Current Episode')
-            if not os.path.isfile(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/{image_count}.jpg'):
+            if not os.path.isfile(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/{image_count}.jpg'):
                 r = urllib.request.Request(image['data-url'], headers={'Referer': 'https://webtoons.com/'})
                 response = urllib.request.urlopen(r)
-                with open(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/{image_count}.jpg', 'wb') as f:
+                with open(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/{image_count}.jpg', 'wb') as f:
                     shutil.copyfileobj(response, f)
                 image_count += 1
             else:
                 image_count += 1
                 pass
-        with open(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/num_images.txt', 'w') as file:
+        with open(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/num_images.txt', 'w') as file:
             file.write(str(image_count - 1)) # Stores how many images are in the episode inside a text file, which will be used as a reference by the fetch api to load the images inside the index.html
-        with open(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/index.html', 'w') as index:
+        with open(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/index.html', 'w') as index:
             index.write(r'''
 
 <!DOCTYPE html>
@@ -185,7 +185,7 @@ html, body {
 </html>
 
             ''') # Creates an index.html file to mimic Webtoon's style of displaying the cartoons (one image below another), with a black background, because white hurts the eyes much more than black, and is less comfortable to look at
-        with open(f'E:/Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/run-server.bat', 'w') as faiol:
+        with open(f'Webtoons/{cartoons_names[current_index]}/episode-{current_episode}/run-server.bat', 'w') as faiol:
             faiol.write('python -m http.server') # Starts a local server, which is needed to load the images, using the fetch api
         current_episode += 1
     current_index += 1
